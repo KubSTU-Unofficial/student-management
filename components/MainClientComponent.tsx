@@ -30,49 +30,59 @@ interface VerifyRequest {
 
 export default function MainClientComponent({
   onVerifyClick,
+  onLogOutClick,
   students
 }: {
   onVerifyClick: (request_ids: number[], isVerified: boolean) => void,
+  onLogOutClick: () => void
   students: Record<number, Student & { id: number, z_n: string }>
 }) {
   const [selected, setSelected] = useState<number[]>([]);
 
   return (
-    <div className="w-1/3 bg-accent mx-auto h-full p-4">
-      <div className="flex justify-between mb-5">
-        <Button
-          disabled={selected.length === 0}
-          onClick={() => onVerifyClick(selected, true)}
-          className="bg-green-600 hover:bg-green-700">
-          Подтвердить выбранных
-        </Button>
-        <Button
-          disabled={selected.length === 0}
-          onClick={() => onVerifyClick(selected, false)}
-          className="bg-red-600 hover:bg-red-700">
-          Отказать выбранных
-        </Button>
+    <div className="mx-auto h-full p-4 min-h-screen w-4/5">
+      <p className="mb-4 text-4xl font-bold">
+        Запросы на верификацию
+      </p>
+      <div className="sticky top-0 p-4 border bg-sidebar-accent mb-4 flex justify-between rounded-lg">
+        <div className="flex gap-3">
+          <Button
+            disabled={selected.length === 0}
+            onClick={() => onVerifyClick(selected, true)}
+            className="bg-green-600 hover:bg-green-700">
+            Подтвердить выбранных
+          </Button>
+          <Button
+            disabled={selected.length === 0}
+            onClick={() => onVerifyClick(selected, false)}
+            className="bg-red-600 hover:bg-red-700">
+            Отказать выбранных
+          </Button>
+        </div>
+        <div>
+          <Button
+            onClick={onLogOutClick}>
+            Выйти из аккаунта
+          </Button>
+        </div>
       </div>
 
-      <p className="mb-2">
-        Список студентов запросивших верификацию:
-      </p>
-      <div className="grid gap-4">
+      <div className="grid gap-4 grid-cols-3">
         {Object.values(students).map((student) => (
           <>
-            <Card key={student.id}>
+            <Card key={student.request_id}>
               <CardHeader>
                 <div className="flex justify-between gap-6 items-center">
                   <Checkbox
-                    checked={selected.includes(student.id)}
+                    checked={selected.includes(student.request_id)}
                     onCheckedChange={(checked) =>
                       checked ?
-                        setSelected([...selected, student.id]) :
-                        setSelected(selected.filter((id: number) => id !== student.id))
+                        setSelected([...selected, student.request_id]) :
+                        setSelected(selected.filter((id: number) => id !== student.request_id))
                     }
-                    id={student.id.toString()}
+                    id={student.request_id.toString()}
                   />
-                  <Label htmlFor={student.id.toString()} className="w-full">
+                  <Label htmlFor={student.request_id.toString()} className="w-full">
                     <CardTitle>{student.fio}</CardTitle>
                     <CardDescription>{student.z_n}</CardDescription>
                   </Label>
@@ -85,14 +95,14 @@ export default function MainClientComponent({
               </CardContent>
               <CardFooter className="flex justify-end gap-4">
                 <Button
-                  onClick={() => onVerifyClick(student.id, true)}
+                  onClick={() => onVerifyClick([student.request_id], true)}
                   className="bg-green-600 hover:bg-green-700">
-                  Подтвердить 
+                  Подтвердить
                 </Button>
                 <Button
-                  onClick={() => onVerifyClick(student.id, false)}
+                  onClick={() => onVerifyClick([student.request_id], false)}
                   className="bg-red-600 hover:bg-red-700">
-                  Отказать 
+                  Отказать
                 </Button>
               </CardFooter>
             </Card>
